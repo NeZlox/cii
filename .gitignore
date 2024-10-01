@@ -5,3 +5,4 @@ venv/
 .git/
 README.md
 secret/
+src/images
