@@ -13,7 +13,6 @@ class BaseException(HTTPException):
         super().__init__(status_code=self.status_code, detail=self.detail)
 
 
-
 class ErrorBaseAioHttpServiceUnavailable(BaseException):
     status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     detail = "Service unavailable"
@@ -35,3 +34,38 @@ class ErrorBaseAioHttpServiceServerError(BaseException):
     """Исключение для ошибок сервера."""
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     detail = "Server error"
+
+
+class CannotUpdateDataToDatabase(BaseException):
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    detail = "Не удалось обновить запись"
+
+
+class CannotInsertDataToDatabaseDataAlreadyExist(BaseException):
+    status_code = status.HTTP_409_CONFLICT
+    detail = "Данные уже существуют"
+
+
+class CannotDeleteDataToDatabase(BaseException):
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    detail = "Не удалось удалить запись"
+
+
+class CannotInsertDataToDatabase(BaseException):
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    detail = "Не удалось добавить запись"
+
+
+class CannotFindAllDataToDatabase(BaseException):
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    detail = "Не удалось найти все записи"
+
+
+class CannotFindOneOrNoneDataToDatabase(BaseException):
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    detail = "Не удалось найти одну запись или ничего"
+
+
+class CannotExecuteQueryToDatabase(BaseException):
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    detail = "Не удалось выполнить запрос в базу данных"

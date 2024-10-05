@@ -31,8 +31,8 @@ class CustomJsonFormatter(jsonlogger.JsonFormatter):
         else:
             log_record["level"] = record.levelname
 
-        # Добавление поля msg
-        log_record["msg"] = record.getMessage()
+        if log_record.get("msg", None):
+            log_record["msg"] = record.getMessage()
 
 
 formatter = CustomJsonFormatter(

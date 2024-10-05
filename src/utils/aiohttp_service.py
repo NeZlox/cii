@@ -35,7 +35,7 @@ class BaseAioHttpService(metaclass=SingletonMeta):
             cls._session = aiohttp.ClientSession(timeout=timeout, connector=connector)
 
     @classmethod
-    def get_session(cls):
+    def get_session(cls) -> aiohttp.ClientSession:
         if cls._session is None:
             cls.set_session()
         return cls._session
@@ -101,8 +101,16 @@ class BaseAioHttpService(metaclass=SingletonMeta):
                                        response_handler=lambda response: response.text())
 
     @classmethod
+    async def make_read_request(cls, url: str, method: Literal["GET", "POST"], headers: dict = None,
+                                params: dict = None, data: dict = None, json: dict = None) -> bytes:
+        """Выполнение HTTP-запроса, ожидающего изображение в ответе"""
+        return await cls._make_request(url, method, headers, params, data, json,
+                                       response_handler=lambda response: response.read())
+
+    @classmethod
     async def _handle_response(cls, response: aiohttp.ClientResponse) -> aiohttp.ClientResponse:
         """Обработка ответа от сервера"""
+        print(response)
         if response.status == 200:
             return response
         elif 400 <= response.status < 500:
