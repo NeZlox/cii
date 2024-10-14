@@ -110,7 +110,7 @@ class BaseAioHttpService(metaclass=SingletonMeta):
     @classmethod
     async def _handle_response(cls, response: aiohttp.ClientResponse) -> aiohttp.ClientResponse:
         """Обработка ответа от сервера"""
-        print(response)
+        #print(response)
         if response.status == 200:
             return response
         elif 400 <= response.status < 500:

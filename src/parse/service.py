@@ -37,7 +37,7 @@ class ParseService(BaseAioHttpService):
         img_data = await BaseAioHttpService.make_read_request(img_url, method='GET')
 
         # Определение пути для сохранения изображения
-        path = os.path.join(os.getcwd(), 'src', 'images', f'{name_file}.jpg')
+        path = (os.path.join(os.getcwd(), 'src', 'images', f'{name_file}.jpg')).replace('\\', '/')
 
         # Сохранение изображения в файловую систему
         async with aiofiles.open(path, 'wb') as file:
@@ -74,7 +74,7 @@ class ParseService(BaseAioHttpService):
         while low < high:
             mid = (low + high + 1) // 2
             url = cls._URL_TEMPLATE.format(mid)
-            print(f"Checking URL: {url}")
+            # print(f"Checking URL: {url}")
             try:
                 text = await cls.make_text_request(url=url, method='GET')
                 soup = BeautifulSoup(text, 'lxml')

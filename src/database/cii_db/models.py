@@ -8,6 +8,13 @@ from sqlalchemy.orm import Mapped, mapped_column
 
 from src.database.cii_db.database import Base
 
+__all__ = [
+    'TagsModel',
+    'PicturesModel',
+    'PictureToTagsModel',
+    'ModelModel'
+]
+
 int_pk = Annotated[
     int,
     mapped_column(
@@ -84,6 +91,8 @@ class PicturesModel(Base):
     created_at: Mapped[template_created_at]
 
     __table_args__ = (
+        #UniqueConstraint('url_page', name='unique_pictures_url_page'),
+        UniqueConstraint('url_image', name='unique_pictures_url_image'),
         {'comment': 'Таблица изображений с разрешениями и ссылками'},
     )
 
@@ -108,7 +117,7 @@ class PictureToTagsModel(Base):
     )
 
     __table_args__ = (
-        UniqueConstraint('id_tag', 'id_picture', name='unique_tag_picture'),
+        UniqueConstraint('id_tag', 'id_picture', name='unique_picture_to_tags_id_tag_id_picture'),
         {'comment': 'Таблица связи между изображениями и тегами (многие ко многим)'},
     )
 

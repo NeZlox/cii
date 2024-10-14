@@ -1,8 +1,8 @@
 """initial_migration
 
-Revision ID: f78342c25da1
+Revision ID: 689e4d1aef33
 Revises: 
-Create Date: 2024-10-14 23:14:04.320641
+Create Date: 2024-10-15 00:40:46.667848
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'f78342c25da1'
+revision: str = '689e4d1aef33'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -30,6 +30,7 @@ def upgrade() -> None:
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', now())"), nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', now())"), nullable=False),
     sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('url_image', name='unique_pictures_url_image'),
     comment='Таблица изображений с разрешениями и ссылками'
     )
     op.create_table('tags',
@@ -53,7 +54,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['id_picture'], ['pictures.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['id_tag'], ['tags.id'], onupdate='CASCADE', ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('id_tag', 'id_picture', name='unique_tag_picture'),
+    sa.UniqueConstraint('id_tag', 'id_picture', name='unique_picture_to_tags_id_tag_id_picture'),
     comment='Таблица связи между изображениями и тегами (многие ко многим)'
     )
     # ### end Alembic commands ###

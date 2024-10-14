@@ -4,6 +4,13 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, HttpUrl, field_validator
 
+__all__ = [
+    'TagsSchema', 'TagsCreateSchema', 'TagsUpdateSchema',
+    'PicturesSchema', 'PicturesCreateSchema', 'PicturesUpdateSchema',
+    'PictureToTagsSchema', 'PictureToTagsCreateSchema', 'PictureToTagsUpdateSchema',
+    'ModelSchema', 'ModelCreateSchema', 'ModelUpdateSchema'
+]
+
 
 class TagsSchema(BaseModel):
     id: int
