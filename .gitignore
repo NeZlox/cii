@@ -6,5 +6,3 @@ venv/
 README.md
 secret/
 src/images
-
-src/database/

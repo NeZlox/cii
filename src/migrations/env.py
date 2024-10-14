@@ -10,8 +10,8 @@ from alembic import context
 sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
 from src.config import settings
-from src.database.digiseller_orders_db.database import Base, DATABASE_URL
-from src.database.digiseller_orders_db.models import *
+from src.database.cii_db.database import Base, DATABASE_URL
+from src.database.cii_db.models import *
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
