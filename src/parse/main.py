@@ -52,7 +52,7 @@ async def main():
     sem = asyncio.Semaphore(MAX_CONCURRENT_TASKS)
 
     tasks = []
-    for i in range(min_value, 2):
+    for i in range(min_value, max_constraint):
         tasks.append(bounded_process_posts(sem, i))
 
     # Запуск всех задач параллельно
@@ -63,3 +63,11 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
+"""
+python -m src.parse.main 
+alembic upgrade head  
+alembic downgrade -1 
+alembic revision --autogenerate -m "initial_migration"   
+"""
