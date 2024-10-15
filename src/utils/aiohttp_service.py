@@ -7,7 +7,7 @@ from typing import Any, Callable, Literal
 from src.exceptions import (ErrorBaseAioHttpServiceRequestTimeout, ErrorBaseAioHttpServiceBadRequest,
                             ErrorBaseAioHttpServiceUnavailable, ErrorBaseAioHttpServiceServerError)
 
-SIZE_POOL_AIOHTTP = 100
+SIZE_POOL_AIOHTTP = 200
 
 __all__ = ['BaseAioHttpService']
 
@@ -63,7 +63,7 @@ class BaseAioHttpService(metaclass=SingletonMeta):
                 # logger.info(f"Sending {method} request to {url} with headers {headers}, params {params}, data {data} and json {json}")
                 async with cls._session.request(
                         method, url,
-                        headers=headers, params=params, data=data, json=json, timeout=aiohttp.ClientTimeout(total=60)
+                        headers=headers, params=params, data=data, json=json, timeout=aiohttp.ClientTimeout(total=10)
                 ) as response:
                     response = await cls._handle_response(response)
                     # logger.info("Request successful, processing data")

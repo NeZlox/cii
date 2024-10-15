@@ -7,7 +7,7 @@ from src.database.cii_db.queries import TransactionSessionQuery
 from src.database.cii_db.schemas import PicturesCreateSchema
 
 # Количество одновременных задач
-MAX_CONCURRENT_TASKS = 10
+MAX_CONCURRENT_TASKS = 4
 
 
 # Функция, которая будет обрабатывать посты
@@ -33,7 +33,7 @@ async def process_posts(post_id: int):
         )
     except Exception as e:
         pass
-        # print(f"Error processing post {post_id}: {e}")
+        print(f"Error processing post {post_id}: {e}")
 
 
 # Функция-обработчик с ограничением по одновременным задачам
@@ -52,11 +52,13 @@ async def main():
     sem = asyncio.Semaphore(MAX_CONCURRENT_TASKS)
 
     tasks = []
-    for i in range(min_value, max_constraint):
-        tasks.append(bounded_process_posts(sem, i))
+    # 1140
+    for i in range(1000, max_constraint):
+        await process_posts(i)
+        #tasks.append(bounded_process_posts(sem, i))
 
     # Запуск всех задач параллельно
-    await asyncio.gather(*tasks)
+    #await asyncio.gather(*tasks)
 
     await BaseAioHttpService.close_session()
 
