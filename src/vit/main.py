@@ -1,5 +1,8 @@
 # main.py
 import asyncio
+
+import torch
+
 from src.vit.train import train_model
 from src.vit.evaluate import evaluate_model
 from src.vit.dataset import get_training_data, ArtDataset
@@ -27,6 +30,9 @@ async def main():
         num_labels=num_tags,
         ignore_mismatched_sizes=True  # Игнорируем несовпадения размеров слоёв
     )
+    # Замена финального слоя (головы) классификации на новый, соответствующий числу меток (4500)
+    model.classifier = torch.nn.Linear(model.config.hidden_size, num_tags)
+
     optimizer = AdamW(model.parameters(), lr=5e-5)
     loss_fn = BCEWithLogitsLoss()
 

@@ -68,9 +68,9 @@ class ArtDataset(Dataset):
 
         # Инициализация MultiLabelBinarizer для многометочных данных
         self.mlb = MultiLabelBinarizer(classes=range(num_classes))
-        all_tags = [picture.tags for picture in data]
-
-        self.mlb.fit(all_tags)
+        all_tags = {tag for picture in data for tag in picture.tags}  # Собираем уникальные теги
+        self.mlb.fit([list(all_tags)])  # Обучаем mlb на всех уникальных тегах
+        self.all_tags = list(all_tags)  # Сохраняем список всех тегов
 
     def __len__(self):
         return len(self.data)

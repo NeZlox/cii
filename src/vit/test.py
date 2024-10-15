@@ -38,57 +38,53 @@ async def evaluate_model(model, test_dataloader):
     print(f"Precision: {precision}")
     print(f"Recall: {recall}")
     print(f"F1 Score: {f1}")
-    print(f"Classification Report:\\n{report}")
+    print(f"Classification Report:\n{report}")
 
 
 # Прогнозирование на новых изображениях
-def predict_on_new_image(model, image_path):
-    image = process_image(image_path)['pixel_values'].squeeze(0).unsqueeze(0)  # Преобразуем для подачи в модель
+def predict_on_new_image(model, image_path, mlb):
+    image = process_image(image_path)['pixel_values'].squeeze(0).unsqueeze(0)  # Преобразуем изображение
     model.eval()
     with torch.no_grad():
         output = model(image)
         logits = output.logits
         preds = (logits.cpu().numpy() > 0).astype(int)  # Превращаем логиты в бинарные предсказания
-        return preds
+
+        # Декодируем бинарные предсказания обратно в теги
+        decoded_tags = mlb.inverse_transform(preds)
+        return decoded_tags  # Берем первый элемент, так как результат - это список списков
 
 
 # Визуализация предсказаний на изображении
-def show_image_with_tags(image_path, predicted_tags, mlb):
+def show_image_with_tags(image_path, predicted_tags):
     image = Image.open(image_path)
     plt.imshow(image)
 
-    # Преобразуем предсказания в NumPy массив
-    predicted_tags = np.array(predicted_tags).reshape(1, -1)  # Обеспечиваем правильную форму для `inverse_transform`
+    # Преобразуем предсказанные теги в строки, чтобы их можно было отобразить
+    predicted_tags_str = [str(tag) for tag in predicted_tags]
 
-    # Декодируем предсказанные теги обратно в их текстовые значения
-    decoded_tags = mlb.inverse_transform(predicted_tags)
-
-    plt.title(f"Predicted Tags: {decoded_tags}")
+    plt.title(f"Predicted Tags: {', '.join(predicted_tags_str)}")  # Преобразуем список тегов в строку
     plt.axis('off')
     plt.show()
-
 
 async def main():
     # Загрузка сохраненной модели
     model = ViTForImageClassification.from_pretrained('vit-model', num_labels=4519)
 
-    # Прогнозирование на новом изображении
-    image_path = 'src/images/image_13013.jpg'
-    prediction = predict_on_new_image(model, image_path)
-    print(f"Predicted tags: {prediction}")
-
     # Получение количества классов (тегов) из базы данных
     num_tags = len(await TagsQuery.find_all())
 
     # Извлечение и подготовка данных для обучения
-    data = await get_training_data()
+    data = await get_training_data(cnt=1000, start=0)
     dataset = ArtDataset(data, num_classes=num_tags)
+
+    # Прогнозирование на новом изображении
+    image_path = 'src/images/image_13013.jpg'
+    prediction = predict_on_new_image(model, image_path, dataset.mlb)
+
+
     # Визуализация предсказаний
-    dataset = ArtDataset(data, num_classes=num_tags)
-    # dataset = ArtDataset([], 4519)  # Создаем пустой датасет только для использования mlb
-
-
-    show_image_with_tags(image_path, prediction[0], dataset.mlb)
+    show_image_with_tags(image_path, prediction[0])  # Берем первый элемент, так как это список
 
 
 # Запуск асинхронной задачи
@@ -96,5 +92,6 @@ if __name__ == "__main__":
     asyncio.run(main())
 
 """
+Запуск программы:
 python -m src.vit.test
 """
