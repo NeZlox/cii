@@ -4,6 +4,7 @@ from typing import List
 import numpy as np
 from sklearn.preprocessing import LabelEncoder, MultiLabelBinarizer
 
+from src.database.cii_db.queries import TagsQuery
 from src.database.cii_db.queries.pictures import PicturesQuery
 from pydantic import BaseModel
 from PIL import Image
@@ -60,17 +61,19 @@ async def get_training_data(cnt: int = 10, start: int = 0):
     ]
 
 
+async def get_all_tags():
+    tags = await TagsQuery.find_all()  # Запрашиваем имена тегов
+    tag_names = [tag.name for tag in tags]
+    return list(set(tag_names))
+
+
 # Класс Dataset для загрузки изображений и тегов
 class ArtDataset(Dataset):
-    def __init__(self, data: List[PicturesWithTagsSchema], num_classes):
+    def __init__(self, data: List[PicturesWithTagsSchema], tag_names: List[str]):
         self.data = data
-        self.num_classes = num_classes
-
-        # Инициализация MultiLabelBinarizer для многометочных данных
-        self.mlb = MultiLabelBinarizer(classes=range(num_classes))
-        all_tags = {tag for picture in data for tag in picture.tags}  # Собираем уникальные теги
-        self.mlb.fit([list(all_tags)])  # Обучаем mlb на всех уникальных тегах
-        self.all_tags = list(all_tags)  # Сохраняем список всех тегов
+        self.mlb = MultiLabelBinarizer(classes=tag_names)
+        all_tags = [picture.tags for picture in data]
+        self.mlb.fit(all_tags)
 
     def __len__(self):
         return len(self.data)

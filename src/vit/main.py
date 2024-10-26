@@ -5,23 +5,23 @@ import torch
 
 from src.vit.train import train_model
 from src.vit.evaluate import evaluate_model
-from src.vit.dataset import get_training_data, ArtDataset
+from src.vit.dataset import get_training_data, ArtDataset, get_all_tags
 from src.vit.save_model import save_model
 from torch.utils.data import DataLoader
 from transformers import ViTForImageClassification
 from torch.optim import AdamW
 from torch.nn import CrossEntropyLoss, BCEWithLogitsLoss
-from src.database.cii_db.queries import TagsQuery
+
 
 
 # Асинхронная функция, которая будет выполняться в главном потоке
 async def main():
     # Получение количества классов (тегов) из базы данных
-    num_tags = len(await TagsQuery.find_all())
-
+    tags = await get_all_tags()
+    num_tags = len(tags)
     # Извлечение и подготовка данных для обучения
     data = await get_training_data(cnt=1000,start=0)
-    dataset = ArtDataset(data, num_classes=num_tags)
+    dataset = ArtDataset(data, tag_names=tags)
     dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
 
     # Создание модели, оптимизатора и функции потерь

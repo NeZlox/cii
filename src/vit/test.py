@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from transformers import ViTForImageClassification
 
 from src.database.cii_db.queries import TagsQuery
-from src.vit.dataset import process_image, ArtDataset, get_training_data
+from src.vit.dataset import process_image, ArtDataset, get_training_data, get_all_tags
 from src.vit.save_model import load_model
 
 
@@ -68,15 +68,18 @@ def show_image_with_tags(image_path, predicted_tags):
     plt.show()
 
 async def main():
-    # Загрузка сохраненной модели
-    model = ViTForImageClassification.from_pretrained('vit-model', num_labels=4519)
 
     # Получение количества классов (тегов) из базы данных
-    num_tags = len(await TagsQuery.find_all())
+    tags = await get_all_tags()
+    num_tags = len(tags)
+
+    # Загрузка сохраненной модели
+    model = ViTForImageClassification.from_pretrained('vit-model', num_labels=num_tags)
+
 
     # Извлечение и подготовка данных для обучения
     data = await get_training_data(cnt=1000, start=0)
-    dataset = ArtDataset(data, num_classes=num_tags)
+    dataset = ArtDataset(data, tag_names=tags)
 
     # Прогнозирование на новом изображении
     image_path = 'src/images/image_13013.jpg'
