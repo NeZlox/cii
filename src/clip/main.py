@@ -1,37 +1,34 @@
 # main.py
 import asyncio
-
 import torch
-
-from src.vit.train import train_model
-from src.vit.evaluate import evaluate_model
-from src.vit.dataset import get_training_data, ArtDataset, get_all_tags
-from src.vit.save_model import save_model
-from torch.utils.data import DataLoader
-from transformers import ViTForImageClassification
 from torch.optim import AdamW
-from torch.nn import CrossEntropyLoss, BCEWithLogitsLoss
+from torch.nn import BCEWithLogitsLoss, Linear
+from torch.utils.data import DataLoader
+from transformers import CLIPModel, CLIPProcessor
+from src.clip.dataset import get_training_data, ArtDataset, get_all_tags
+from src.clip.train import train_model
+from src.clip.evaluate import evaluate_model
+from src.clip.save_model import save_model
 
+# Инициализация CLIPProcessor для обработки изображений
+processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
 
-
-# Асинхронная функция, которая будет выполняться в главном потоке
+# Асинхронная основная функция для обучения и оценки модели
 async def main():
-    # Получение количества классов (тегов) из базы данных
+    # Получение всех тегов из базы данных
     tags = await get_all_tags()
     num_tags = len(tags)
-    # Извлечение и подготовка данных для обучения
-    data = await get_training_data(cnt=1000,start=0)
+
+    # Загрузка модели CLIP
+    model = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+
+    # Добавление классификатора с нужной размерностью
+    model.classifier = Linear(512, num_tags).to(model.device)
+
+    # Подготовка данных
+    data = await get_training_data(cnt=1000, start=0)
     dataset = ArtDataset(data, tag_names=tags)
     dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
-
-    # Создание модели, оптимизатора и функции потерь
-    model = ViTForImageClassification.from_pretrained(
-        'google/vit-base-patch16-224',
-        num_labels=num_tags,
-        ignore_mismatched_sizes=True  # Игнорируем несовпадения размеров слоёв
-    )
-    # Замена финального слоя (головы) классификации на новый, соответствующий числу меток (4500)
-    model.classifier = torch.nn.Linear(model.config.hidden_size, num_tags)
 
     optimizer = AdamW(model.parameters(), lr=5e-5)
     loss_fn = BCEWithLogitsLoss()
@@ -45,17 +42,16 @@ async def main():
     # Сохранение обученной модели
     save_model(model)
 
-
-# Запуск асинхронной функции через цикл событий
 if __name__ == "__main__":
     asyncio.run(main())
+
 """
 pip install torch 
 pip install transformers
 pip install Pillow 
 pip install scikit-learn 
 
-python -m src.vit.main 
+python -m src.clip.main 
 alembic upgrade head  
 alembic downgrade -1 
 alembic revision --autogenerate -m "initial_migration"   
