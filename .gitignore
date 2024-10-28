@@ -6,5 +6,5 @@ venv/
 README.md
 secret/
 src/images/*
-vit-model/
-clip-model/
+vit-model/*
+clip-model/*
