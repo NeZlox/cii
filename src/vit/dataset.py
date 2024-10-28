@@ -2,14 +2,14 @@
 from typing import List
 
 import numpy as np
-from sklearn.preprocessing import LabelEncoder, MultiLabelBinarizer
+from PIL import Image
+from pydantic import BaseModel
+from sklearn.preprocessing import MultiLabelBinarizer
+from torch.utils.data import Dataset
+from transformers import ViTFeatureExtractor
 
 from src.database.cii_db.queries import TagsQuery
 from src.database.cii_db.queries.pictures import PicturesQuery
-from pydantic import BaseModel
-from PIL import Image
-from torch.utils.data import Dataset
-from transformers import ViTFeatureExtractor
 
 # Используем ViTFeatureExtractor для подготовки изображений
 feature_extractor = ViTFeatureExtractor.from_pretrained('google/vit-base-patch16-224')

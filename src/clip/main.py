@@ -1,17 +1,19 @@
 # main.py
 import asyncio
-import torch
-from torch.optim import AdamW
+
 from torch.nn import BCEWithLogitsLoss, Linear
+from torch.optim import AdamW
 from torch.utils.data import DataLoader
 from transformers import CLIPModel, CLIPProcessor
-from src.clip.dataset import get_training_data, ArtDataset, get_all_tags
-from src.clip.train import train_model
+
+from src.clip.dataset import ArtDataset, get_all_tags, get_training_data
 from src.clip.evaluate import evaluate_model
 from src.clip.save_model import save_model
+from src.clip.train import train_model
 
 # Инициализация CLIPProcessor для обработки изображений
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+
 
 # Асинхронная основная функция для обучения и оценки модели
 async def main():
@@ -40,7 +42,8 @@ async def main():
     await evaluate_model(model, dataloader)
 
     # Сохранение обученной модели
-    save_model(model)
+    save_model(model, tags=tags)
+
 
 if __name__ == "__main__":
     asyncio.run(main())

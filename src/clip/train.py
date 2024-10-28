@@ -1,11 +1,13 @@
 # train.py
 import asyncio
+
 import torch
-from torch.optim import AdamW
 from torch.nn import BCEWithLogitsLoss
+from torch.optim import AdamW
 from torch.utils.data import DataLoader
 from transformers import CLIPModel
-from src.clip.dataset import get_training_data, ArtDataset, get_all_tags
+
+from src.clip.dataset import ArtDataset, get_all_tags, get_training_data
 
 
 async def train_model(model, dataloader, optimizer, loss_fn, num_epochs=5):

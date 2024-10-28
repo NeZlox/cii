@@ -1,26 +1,20 @@
 import asyncio
 import atexit
-import aiohttp
 from socket import AF_INET
-from src.logger import logger
 from typing import Any, Callable, Literal
-from src.exceptions import (ErrorBaseAioHttpServiceRequestTimeout, ErrorBaseAioHttpServiceBadRequest,
-                            ErrorBaseAioHttpServiceUnavailable, ErrorBaseAioHttpServiceServerError)
+
+import aiohttp
+
+from src.exceptions import (ErrorBaseAioHttpServiceBadRequest,
+                            ErrorBaseAioHttpServiceRequestTimeout,
+                            ErrorBaseAioHttpServiceServerError,
+                            ErrorBaseAioHttpServiceUnavailable)
+from src.logger import logger
+from src.utils.singleton_meta import SingletonMeta
 
 SIZE_POOL_AIOHTTP = 200
 
 __all__ = ['BaseAioHttpService']
-
-
-class SingletonMeta(type):
-    """Метакласс для реализации паттерна Singleton"""
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(SingletonMeta, cls).__call__(*args, **kwargs)
-
-        return cls._instances[cls]
 
 
 class BaseAioHttpService(metaclass=SingletonMeta):
@@ -110,7 +104,7 @@ class BaseAioHttpService(metaclass=SingletonMeta):
     @classmethod
     async def _handle_response(cls, response: aiohttp.ClientResponse) -> aiohttp.ClientResponse:
         """Обработка ответа от сервера"""
-        #print(response)
+        # print(response)
         if response.status == 200:
             return response
         elif 400 <= response.status < 500:

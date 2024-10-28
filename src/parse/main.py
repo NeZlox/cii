@@ -1,10 +1,9 @@
 import asyncio
-import os
 
-from src.parse.service import ParseService
-from src.utils import BaseAioHttpService
 from src.database.cii_db.queries import TransactionSessionQuery
 from src.database.cii_db.schemas import PicturesCreateSchema
+from src.parse.service import ParseService
+from src.utils import BaseAioHttpService
 
 # Количество одновременных задач
 MAX_CONCURRENT_TASKS = 4
@@ -55,17 +54,16 @@ async def main():
     # 1140
     for i in range(1000, max_constraint):
         await process_posts(i)
-        #tasks.append(bounded_process_posts(sem, i))
+        # tasks.append(bounded_process_posts(sem, i))
 
     # Запуск всех задач параллельно
-    #await asyncio.gather(*tasks)
+    # await asyncio.gather(*tasks)
 
     await BaseAioHttpService.close_session()
 
 
 if __name__ == "__main__":
     asyncio.run(main())
-
 
 """
 python -m src.parse.main 

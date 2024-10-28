@@ -21,4 +21,4 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-#settings.post_settings()
+# settings.post_settings()

@@ -1,13 +1,14 @@
-from typing import List, Dict
+from typing import Dict, List
 
 from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 
 from src.database.base_DAO import BaseDAO
-from src.database.cii_db.models import PicturesModel, TagsModel, PictureToTagsModel
-from src.database.cii_db.schemas import (
-    PicturesCreateSchema, PicturesUpdateSchema)
+from src.database.cii_db.models import (PicturesModel, PictureToTagsModel,
+                                        TagsModel)
+from src.database.cii_db.schemas import (PicturesCreateSchema,
+                                         PicturesUpdateSchema)
 
 __all__ = ['PicturesQuery']
 

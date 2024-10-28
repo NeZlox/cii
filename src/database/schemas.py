@@ -1,15 +1,16 @@
 from typing import Any, Dict, Generic, List, Literal, Optional, TypeVar, Union
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, model_validator
 
 SortType = Literal["asc", "desc"]
-#FilterType = Literal["ge", "gt","le","lt","e","like","ilike"]
+# FilterType = Literal["ge", "gt","le","lt","e","like","ilike"]
 
 
 T = TypeVar('T', bool, str, int, float)
 
+
 class FilterType(BaseModel, Generic[T]):
-    and_: Optional[Literal[1,0]] = None
+    and_: Optional[Literal[1, 0]] = None
     ge: Optional[T] = None
     gt: Optional[T] = None
     le: Optional[T] = None
@@ -29,6 +30,7 @@ class FilterType(BaseModel, Generic[T]):
         elif len(values) == 2:
             raise ValueError("Поле 'and_' должно быть пустым, если присутствует ровно один фильтр.")
         return values
+
 
 class SortedData_Schema(BaseModel):
     __SORTING_RULES: Dict[str, SortType] = None
@@ -73,7 +75,7 @@ class SortedData_Schema(BaseModel):
 
 
 class FilteredData_Schema(BaseModel):
-    __FILTER_RULES: Dict[str, Dict[FilterType,Any]] = None
+    __FILTER_RULES: Dict[str, Dict[FilterType, Any]] = None
 
     @model_validator(mode="before")
     def populate_filters(cls, values):
@@ -86,11 +88,8 @@ class FilteredData_Schema(BaseModel):
                         if len(new_key) == 2:
                             filters[new_key[1]] = value
 
-
         cls.__FILTER_RULES = filters
         return values
 
     def get_filter_rules(self) -> Dict[str, Any]:
         return self.__FILTER_RULES
-
-

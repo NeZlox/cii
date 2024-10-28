@@ -1,9 +1,7 @@
 import datetime
-import enum
 from typing import Annotated
 
-from sqlalchemy import (BigInteger, CheckConstraint, Date, Enum, ForeignKey,
-                        Numeric, Text, UniqueConstraint, text)
+from sqlalchemy import BigInteger, ForeignKey, Text, UniqueConstraint, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.database.cii_db.database import Base
@@ -91,7 +89,7 @@ class PicturesModel(Base):
     created_at: Mapped[template_created_at]
 
     __table_args__ = (
-        #UniqueConstraint('url_page', name='unique_pictures_url_page'),
+        # UniqueConstraint('url_page', name='unique_pictures_url_page'),
         UniqueConstraint('url_image', name='unique_pictures_url_image'),
         {'comment': 'Таблица изображений с разрешениями и ссылками'},
     )

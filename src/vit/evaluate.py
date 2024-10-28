@@ -1,11 +1,13 @@
 # evaluate.py
 import asyncio
-from sklearn.metrics import accuracy_score, classification_report
-import numpy as np
+
 import torch
+from sklearn.metrics import accuracy_score, classification_report
 from torch.utils.data import DataLoader
 from transformers import ViTForImageClassification
-from src.vit.dataset import get_training_data, ArtDataset
+
+from src.vit.dataset import ArtDataset, get_training_data
+
 
 # Оценка модели
 async def evaluate_model(model, dataloader):
@@ -42,7 +44,7 @@ async def main():
     # Оценка модели
     await evaluate_model(model, dataloader)
 
+
 # Запуск асинхронной задачи
 if __name__ == "__main__":
     asyncio.run(main())
-

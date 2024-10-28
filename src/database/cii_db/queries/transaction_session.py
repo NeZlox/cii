@@ -1,13 +1,14 @@
 from typing import List
 
-from sqlalchemy import select, insert, delete
+from sqlalchemy import delete, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy.exc import SQLAlchemyError
+
 from src.database.base_DAO import BaseDAO
 from src.database.cii_db.models import *
-from src.logger import logger
-from src.exceptions import CannotInsertDataToDatabase
-from sqlalchemy.exc import SQLAlchemyError
 from src.database.cii_db.schemas import PicturesCreateSchema
+from src.exceptions import CannotInsertDataToDatabase
+from src.logger import logger
 
 __all__ = ['TransactionSessionQuery']
 

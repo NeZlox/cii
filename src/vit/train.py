@@ -2,13 +2,13 @@
 import asyncio
 
 import torch
-from transformers import ViTForImageClassification
+from torch.nn import BCEWithLogitsLoss
 from torch.optim import AdamW
-from torch.nn import CrossEntropyLoss, BCEWithLogitsLoss
 from torch.utils.data import DataLoader
+from transformers import ViTForImageClassification
 
 from src.database.cii_db.queries import TagsQuery
-from src.vit.dataset import get_training_data, ArtDataset
+from src.vit.dataset import ArtDataset, get_training_data
 
 
 # Функция для обучения модели

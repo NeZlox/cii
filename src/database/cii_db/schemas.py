@@ -1,8 +1,6 @@
-import datetime
-from decimal import ROUND_DOWN, Decimal
 from typing import Optional
 
-from pydantic import BaseModel, Field, HttpUrl, field_validator
+from pydantic import BaseModel, HttpUrl
 
 __all__ = [
     'TagsSchema', 'TagsCreateSchema', 'TagsUpdateSchema',

@@ -1,13 +1,15 @@
 # dataset.py
 from typing import List
+
 import numpy as np
-from sklearn.preprocessing import MultiLabelBinarizer
-from src.database.cii_db.queries import TagsQuery
-from src.database.cii_db.queries.pictures import PicturesQuery
-from pydantic import BaseModel
 from PIL import Image
+from pydantic import BaseModel
+from sklearn.preprocessing import MultiLabelBinarizer
 from torch.utils.data import Dataset
 from transformers import CLIPProcessor
+
+from src.database.cii_db.queries import TagsQuery
+from src.database.cii_db.queries.pictures import PicturesQuery
 
 # Используем CLIPProcessor для подготовки изображений
 processor = CLIPProcessor.from_pretrained('openai/clip-vit-base-patch32')

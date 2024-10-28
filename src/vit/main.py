@@ -2,16 +2,15 @@
 import asyncio
 
 import torch
-
-from src.vit.train import train_model
-from src.vit.evaluate import evaluate_model
-from src.vit.dataset import get_training_data, ArtDataset, get_all_tags
-from src.vit.save_model import save_model
+from torch.nn import BCEWithLogitsLoss
+from torch.optim import AdamW
 from torch.utils.data import DataLoader
 from transformers import ViTForImageClassification
-from torch.optim import AdamW
-from torch.nn import CrossEntropyLoss, BCEWithLogitsLoss
 
+from src.vit.dataset import ArtDataset, get_all_tags, get_training_data
+from src.vit.evaluate import evaluate_model
+from src.vit.save_model import save_model
+from src.vit.train import train_model
 
 
 # Асинхронная функция, которая будет выполняться в главном потоке
@@ -20,7 +19,7 @@ async def main():
     tags = await get_all_tags()
     num_tags = len(tags)
     # Извлечение и подготовка данных для обучения
-    data = await get_training_data(cnt=1000,start=0)
+    data = await get_training_data(cnt=1000, start=0)
     dataset = ArtDataset(data, tag_names=tags)
     dataloader = DataLoader(dataset, batch_size=32, shuffle=True)
 
@@ -43,7 +42,7 @@ async def main():
     await evaluate_model(model, dataloader)
 
     # Сохранение обученной модели
-    save_model(model)
+    save_model(model, tags=tags)
 
 
 # Запуск асинхронной функции через цикл событий

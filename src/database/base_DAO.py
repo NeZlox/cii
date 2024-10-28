@@ -5,29 +5,18 @@ from sqlalchemy import and_, asc, delete, desc, insert, or_, select, update
 from sqlalchemy.exc import SQLAlchemyError
 
 from src.database.cii_db.database import Base
-from src.database.cii_db.database import \
-    async_session_maker as sessionmaker
+from src.database.cii_db.database import async_session_maker as sessionmaker
 from src.exceptions import (CannotDeleteDataToDatabase,
                             CannotFindAllDataToDatabase,
                             CannotFindOneOrNoneDataToDatabase,
                             CannotInsertDataToDatabase,
                             CannotUpdateDataToDatabase)
 from src.logger import logger
+from src.utils.singleton_meta import SingletonMeta
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
-
-
-class SingletonMeta(type):
-    """Метакласс для реализации паттерна Singleton"""
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(SingletonMeta, cls).__call__(*args, **kwargs)
-
-        return cls._instances[cls]
 
 
 class BaseDAO(Generic[ModelType, CreateSchemaType, UpdateSchemaType], metaclass=SingletonMeta):

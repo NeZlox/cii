@@ -1,17 +1,21 @@
 # test.py
 import asyncio
-import torch
-import numpy as np
-from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score, classification_report
-from torch.utils.data import DataLoader
-from PIL import Image
+
 import matplotlib.pyplot as plt
-from transformers import CLIPProcessor, CLIPModel
-from src.clip.dataset import process_image, ArtDataset, get_training_data, get_all_tags
-from src.clip.save_model import load_model
+import numpy as np
+import torch
+from PIL import Image
+from sklearn.metrics import (accuracy_score, classification_report, f1_score,
+                             precision_score, recall_score)
+from torch.utils.data import DataLoader
+from transformers import CLIPProcessor
+
+from src.clip.dataset import ArtDataset, get_training_data, process_image
+from src.clip.save_model import load_classes, load_model
 
 # Инициализация CLIPProcessor
 processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+
 
 # Оценка модели
 async def evaluate_model(model, test_dataloader):
@@ -42,6 +46,7 @@ async def evaluate_model(model, test_dataloader):
     print(f"F1 Score: {f1}")
     print(f"Classification Report:\n{report}")
 
+
 # Прогнозирование на новом изображении
 def predict_on_new_image(model, image_path, mlb):
     image = process_image(image_path).unsqueeze(0)
@@ -53,6 +58,7 @@ def predict_on_new_image(model, image_path, mlb):
         decoded_tags = mlb.inverse_transform(preds)
         return decoded_tags
 
+
 # Визуализация предсказаний на изображении
 def show_image_with_tags(image_path, predicted_tags):
     image = Image.open(image_path)
@@ -62,8 +68,9 @@ def show_image_with_tags(image_path, predicted_tags):
     plt.axis('off')
     plt.show()
 
+
 async def main():
-    tags = await get_all_tags()
+    tags = load_classes()
     num_tags = len(tags)
 
     # Загрузка модели и добавление классификатора
@@ -80,11 +87,9 @@ async def main():
     prediction = predict_on_new_image(model, image_path, dataset.mlb)
     show_image_with_tags(image_path, prediction[0])
 
+
 if __name__ == "__main__":
     asyncio.run(main())
-
-
-
 
 """
 Запуск программы:

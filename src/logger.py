@@ -7,13 +7,6 @@ from src.config import settings
 
 logging.captureWarnings(True)
 
-"""
-        LoggingIntegration(
-            level=logging.INFO,
-            event_level=logging.INFO
-        )
-"""
-
 logger = logging.getLogger()
 
 # куда пишем лог

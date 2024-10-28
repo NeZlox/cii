@@ -1,16 +1,15 @@
+# test.py
 import asyncio
 
-import torch
-import numpy as np
-from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score, classification_report
-from torch.utils.data import DataLoader
-from PIL import Image
 import matplotlib.pyplot as plt
+import torch
+from PIL import Image
+from sklearn.metrics import (accuracy_score, classification_report, f1_score,
+                             precision_score, recall_score)
 from transformers import ViTForImageClassification
 
-from src.database.cii_db.queries import TagsQuery
-from src.vit.dataset import process_image, ArtDataset, get_training_data, get_all_tags
-from src.vit.save_model import load_model
+from src.vit.dataset import ArtDataset, get_training_data, process_image
+from src.vit.save_model import load_classes
 
 
 # Оценка модели на тестовых данных
@@ -67,15 +66,14 @@ def show_image_with_tags(image_path, predicted_tags):
     plt.axis('off')
     plt.show()
 
-async def main():
 
+async def main():
     # Получение количества классов (тегов) из базы данных
-    tags = await get_all_tags()
+    tags = load_classes()
     num_tags = len(tags)
 
     # Загрузка сохраненной модели
     model = ViTForImageClassification.from_pretrained('vit-model', num_labels=num_tags)
-
 
     # Извлечение и подготовка данных для обучения
     data = await get_training_data(cnt=1000, start=0)
@@ -84,7 +82,6 @@ async def main():
     # Прогнозирование на новом изображении
     image_path = 'src/images/image_13013.jpg'
     prediction = predict_on_new_image(model, image_path, dataset.mlb)
-
 
     # Визуализация предсказаний
     show_image_with_tags(image_path, prediction[0])  # Берем первый элемент, так как это список

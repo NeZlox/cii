@@ -13,6 +13,11 @@ class BaseException(HTTPException):
         super().__init__(status_code=self.status_code, detail=self.detail)
 
 
+class RequestHandlingError(BaseException):
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    detail = "Не удалось обработать запрос"
+
+
 class ErrorBaseAioHttpServiceUnavailable(BaseException):
     status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     detail = "Service unavailable"

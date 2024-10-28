@@ -1,10 +1,12 @@
 # evaluate.py
 import asyncio
+
 import torch
 from sklearn.metrics import accuracy_score, classification_report
 from torch.utils.data import DataLoader
 from transformers import CLIPModel
-from src.clip.dataset import get_training_data, ArtDataset, get_all_tags
+
+from src.clip.dataset import ArtDataset, get_all_tags, get_training_data
 
 
 async def evaluate_model(model, dataloader):
