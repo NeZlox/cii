@@ -1,16 +1,23 @@
 import asyncio
 from typing import Optional
 
+from pydantic import BaseModel, Field
+
 from src.database.cii_db.queries import TransactionSessionQuery
 from src.database.cii_db.schemas import PicturesCreateSchema
 from src.parse.service import ParseService as BaseParseService
+
+
+class ParsingResultSchema(BaseModel):
+    start_id: int = Field(..., description="Начальный ID поста")
+    end_id: int = Field(..., description="Конечный ID поста")
 
 
 class ParseService(BaseParseService):
     MAX_CONCURRENT_TASKS = 4
 
     @classmethod
-    async def start_parsing(cls, start_id: Optional[int] = None, end_id: Optional[int] = None):
+    async def start_parsing(cls, start_id: Optional[int] = None, end_id: Optional[int] = None) -> ParsingResultSchema:
         """Запускает асинхронный парсер для обработки изображений."""
         if start_id is None:
             start_id = 1
@@ -21,7 +28,11 @@ class ParseService(BaseParseService):
         # Более стабильный способ
         for post_id in range(start_id, end_id + 1):
             await cls.process_post(post_id)
-        return
+
+        return ParsingResultSchema(
+            start_id=start_id,
+            end_id=end_id
+        )
         # Тестирование
 
         # Инициализация очереди для ID постов

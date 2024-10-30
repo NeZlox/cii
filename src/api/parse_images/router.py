@@ -12,8 +12,8 @@ router = APIRouter(tags=["Parse images"], prefix="/parse")
 
 
 class StartParsingRequestSchema(BaseModel):
-    start_id: Optional[int] = Field(default=None, description="Начальный ID поста для парсинга")
-    end_id: Optional[int] = Field(default=None, description="Конечный ID поста для парсинга")
+    start_id: Optional[int] = Field(default=None, description="Начальный ID поста для парсинга", ge=1)
+    end_id: Optional[int] = Field(default=None, description="Конечный ID поста для парсинга", ge=1)
 
 
 class StartParsingResponseSchema(BaseModel):
@@ -34,12 +34,12 @@ async def start_parsing(
     try:
 
         # Запускаем задачу парсинга изображений
-        await ParseService.start_parsing(start_id=query_params.start_id, end_id=query_params.end_id)
+        result = await ParseService.start_parsing(start_id=query_params.start_id, end_id=query_params.end_id)
 
         return StartParsingResponseSchema(
             status="Парсер запущен успешно",
-            start_id=query_params.start_id,
-            end_id=query_params.end_id
+            start_id=result.start_id,
+            end_id=result.end_id
         )
     except Exception as e:
         logger.exception(f"Ошибка при запуске парсера: {e}")
