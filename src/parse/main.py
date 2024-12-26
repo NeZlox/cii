@@ -1,9 +1,12 @@
 import asyncio
 
+from src.api.search.service import ElasticService
+from src.config import settings
 from src.database.cii_db.queries import TransactionSessionQuery
 from src.database.cii_db.schemas import PicturesCreateSchema
 from src.parse.service import ParseService
 from src.utils import BaseAioHttpService
+from src.utils.elastic_service import BaseElasticService
 
 # Количество одновременных задач
 MAX_CONCURRENT_TASKS = 4
@@ -20,7 +23,7 @@ async def process_posts(post_id: int):
         image_info = await ParseService.get_image(soup=soup, name_file=name_file_img)
         tags_image = await ParseService.get_tags(soup=soup)
 
-        await TransactionSessionQuery.insert_new_picture(
+        id_img = await TransactionSessionQuery.insert_new_picture(
             info_picture=PicturesCreateSchema(
                 resolution_width=image_info.width,
                 resolution_height=image_info.height,
@@ -29,6 +32,12 @@ async def process_posts(post_id: int):
                 path=image_info.path,
             ),
             tags=tags_image
+        )
+        # Сохранение в эластике
+        await ElasticService.add_data(
+            index_name=settings.ELASTIC_INDEX,
+            id_image=id_img,
+            tags_image=tags_image
         )
     except Exception as e:
         pass
@@ -43,6 +52,10 @@ async def bounded_process_posts(sem: asyncio.Semaphore, post_id: int):
 
 async def main():
     BaseAioHttpService.set_session()
+    connect_elastic = BaseElasticService()
+    connect_elastic.connect(
+        host=settings.ELASTIC_URL,
+        verify_certs=False)
     max_value = 10_000_000
     min_value = 1
     max_constraint = await ParseService.binary_search_max_valid(low=min_value, high=max_value)
@@ -52,7 +65,7 @@ async def main():
 
     tasks = []
     # 1140
-    for i in range(1000, max_constraint):
+    for i in range(1, 1000):
         await process_posts(i)
         # tasks.append(bounded_process_posts(sem, i))
 

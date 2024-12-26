@@ -84,7 +84,7 @@ class TransactionSessionQuery(BaseDAO):
                     session.add_all(picture_to_tag_entries)
 
                     await session.commit()
-                    return True
+                    return picture_id
 
             except (SQLAlchemyError, Exception) as e:
                 await session.rollback()

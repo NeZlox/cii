@@ -10,6 +10,7 @@ from src.api.tags_model.service import TagsService
 from src.config import settings
 from src.logger import logger
 from src.utils import BaseAioHttpService
+from src.utils.elastic_service import BaseElasticService
 
 
 @asynccontextmanager
@@ -20,12 +21,18 @@ async def lifespan(app: FastAPI):
 
     session_manager_aiohttp = BaseAioHttpService()
     session_manager_aiohttp.set_session()
+
+    connect_elastic = BaseElasticService()
+    connect_elastic.connect(
+        host=settings.ELASTIC_URL,
+        verify_certs=False)
     await TagsService.init_service()
     try:
         yield
     finally:
         # При выключении
         await session_manager_aiohttp.close_session()
+        connect_elastic.close()
         logger.critical("Server is down")
 
 

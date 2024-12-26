@@ -3,14 +3,12 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+from src.api.parse_images.schemas import ParsingResultSchema
+from src.api.search.service import ElasticService
+from src.config import settings
 from src.database.cii_db.queries import TransactionSessionQuery
 from src.database.cii_db.schemas import PicturesCreateSchema
 from src.parse.service import ParseService as BaseParseService
-
-
-class ParsingResultSchema(BaseModel):
-    start_id: int = Field(..., description="Начальный ID поста")
-    end_id: int = Field(..., description="Конечный ID поста")
 
 
 class ParseService(BaseParseService):
@@ -69,7 +67,7 @@ class ParseService(BaseParseService):
             tags_image = await cls.get_tags(soup=soup)
 
             # Сохранение данных в базе
-            await TransactionSessionQuery.insert_new_picture(
+            id_img = await TransactionSessionQuery.insert_new_picture(
                 info_picture=PicturesCreateSchema(
                     resolution_width=image_info.width,
                     resolution_height=image_info.height,
@@ -79,5 +77,13 @@ class ParseService(BaseParseService):
                 ),
                 tags=tags_image
             )
+            # Сохранение в эластике
+            await ElasticService.add_data(
+                index_name=settings.ELASTIC_INDEX,
+                id_image=id_img,
+                tags_image=tags_image
+            )
+
+
         except Exception as e:
             print(f"Ошибка при обработке поста {post_id}: {e}")

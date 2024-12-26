@@ -2,7 +2,7 @@ import datetime
 from typing import Annotated
 
 from sqlalchemy import BigInteger, ForeignKey, Text, UniqueConstraint, text
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database.cii_db.database import Base
 
@@ -10,7 +10,6 @@ __all__ = [
     'TagsModel',
     'PicturesModel',
     'PictureToTagsModel',
-    'ModelModel'
 ]
 
 int_pk = Annotated[
@@ -117,30 +116,4 @@ class PictureToTagsModel(Base):
     __table_args__ = (
         UniqueConstraint('id_tag', 'id_picture', name='unique_picture_to_tags_id_tag_id_picture'),
         {'comment': 'Таблица связи между изображениями и тегами (многие ко многим)'},
-    )
-
-
-class ModelModel(Base):
-    __tablename__ = "model"
-
-    id_picture: Mapped[int] = mapped_column(
-        ForeignKey(
-            "pictures.id",
-            ondelete="CASCADE",
-            onupdate="CASCADE"
-        ),
-        primary_key=True,
-        comment="Идентификатор изображения"
-    )
-    vec: Mapped[str] = mapped_column(
-        Text,
-        comment="Векторное представление модели"
-    )
-    img_to_text: Mapped[str] = mapped_column(
-        Text,
-        comment="Описание изображения, полученное моделью"
-    )
-
-    __table_args__ = (
-        {'comment': 'Таблица описаний изображений и их векторных представлений, сгенерированных моделью'},
     )

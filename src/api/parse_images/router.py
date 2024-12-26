@@ -5,22 +5,11 @@ from fastapi_versioning import version
 from pydantic import BaseModel, Field
 
 from src.api.error_handler import error_handler
+from src.api.parse_images.schemas import StartParsingResponseSchema, StartParsingRequestSchema
 from src.api.parse_images.service import ParseService
 from src.logger import logger
 
 router = APIRouter(tags=["Parse images"], prefix="/parse")
-
-
-class StartParsingRequestSchema(BaseModel):
-    start_id: Optional[int] = Field(default=None, description="Начальный ID поста для парсинга", ge=1)
-    end_id: Optional[int] = Field(default=None, description="Конечный ID поста для парсинга", ge=1)
-
-
-class StartParsingResponseSchema(BaseModel):
-    status: str = Field(..., description="Статус запуска парсера")
-    start_id: Optional[int] = Field(..., description="Начальный ID поста")
-    end_id: Optional[int] = Field(..., description="Конечный ID поста")
-
 
 @router.post("/start", response_model=StartParsingResponseSchema)
 @version(1)
