@@ -58,6 +58,8 @@ async def main():
         verify_certs=False)
     max_value = 10_000_000
     min_value = 1
+
+    # Максимальное ограничение
     max_constraint = await ParseService.binary_search_max_valid(low=min_value, high=max_value)
 
     # Ограничение одновременных задач

@@ -9,14 +9,7 @@ from elasticsearch import ElasticsearchWarning
 
 warnings.filterwarnings("ignore", category=ElasticsearchWarning)
 
-"""
-GET /tags_test/_search
-{
-  "from": 10,
-  "size": 10
-}
 
-"""
 class ElasticService(BaseElasticService):
     roberta = TransformerDocumentEmbeddings('roberta-base')
     kw_model = KeyBERT(model=roberta)
