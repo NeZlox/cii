@@ -20,7 +20,7 @@ docker compose up -d
 ### Просмотр индекса в Elastic
 
 Для проверки работы индекса, используйте следующий запрос:
-
+http://localhost:5601/app/dev_tools
 ```http
 GET /tags_test/_search
 {
