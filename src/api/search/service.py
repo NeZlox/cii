@@ -42,7 +42,7 @@ class ElasticService(BaseElasticService):
             "sort": [
                 {"_score": {"order": "desc"}}  # Ранжирование по релевантности
             ],
-            "size": limit  # Установка лимита на количество записей
+            #"size": limit  # Установка лимита на количество записей
         }
 
         try:

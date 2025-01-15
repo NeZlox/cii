@@ -22,3 +22,4 @@ class PicturesWithTagsSchema(BaseModel):
 
 class ResponsePictures(BaseModel):
     data: List[PicturesWithTagsSchema]
+    total: int

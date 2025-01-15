@@ -64,7 +64,41 @@ class PicturesQuery(
                 raise CannotExecuteQueryToDatabase
 
     @classmethod
-    async def get_pictures_with_tags_by_ids(cls, image_ids: List[int]) -> List[Dict[str, str]]:
+    async def get_total_by_filter(
+            cls, image_ids: List[int] = None
+    ) -> int:
+        async with cls.async_session_maker() as session:
+            try:
+                # Запрос для получения общего количества записей
+                query = select(func.count(PicturesModel.id).label("count"))
+                if image_ids:
+                    query = query.filter(PicturesModel.id.in_(image_ids))
+
+                result_orm = await session.execute(query)
+                result = result_orm.mappings().one()
+
+                return result.count
+            except (SQLAlchemyError, Exception) as e:
+                await session.rollback()
+                if isinstance(e, SQLAlchemyError):
+                    msg = "PicturesQuery Database error"
+                else:
+                    msg = "PicturesQuery Unknown error"
+
+                msg += ": Cannot get_total_by_filter"
+
+                extra = {
+                    "error": e,
+                    "image_ids": image_ids
+                }
+
+                logger.error(msg, extra=extra, exc_info=True)
+                raise CannotExecuteQueryToDatabase
+
+    @classmethod
+    async def get_pictures_with_tags_by_ids(
+            cls, limit: int, offset: int, image_ids: List[int] = None
+    ) -> List[Dict[str, str]]:
         async with cls.async_session_maker() as session:
             try:
                 # Запрос для получения изображений по списку идентификаторов
@@ -82,7 +116,6 @@ class PicturesQuery(
                     )
                     .join(PictureToTagsModel, PictureToTagsModel.id_picture == PicturesModel.id)
                     .join(TagsModel, TagsModel.id == PictureToTagsModel.id_tag)
-                    .filter(PicturesModel.id.in_(image_ids))
                     .group_by(
                         PicturesModel.id.label('id'),
                         PicturesModel.resolution_width.label('resolution_width'),
@@ -91,7 +124,13 @@ class PicturesQuery(
                         PicturesModel.url_image.label('url_image'),
                         PicturesModel.path.label('path'),
                     )
+                    .offset(offset)
+                    .limit(limit)
                 )
+                if image_ids:
+                    query.filter(PicturesModel.id.in_(image_ids))
+                else:
+                    query.order_by(PicturesModel.updated_at.desc())
 
                 result_orm = await session.execute(query)
                 result = result_orm.mappings().all()
@@ -108,7 +147,9 @@ class PicturesQuery(
 
                 extra = {
                     "error": e,
-                    "image_ids": image_ids
+                    "image_ids": image_ids,
+                    "offset": offset,
+                    "limit": limit
                 }
 
                 logger.error(msg, extra=extra, exc_info=True)
