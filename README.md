@@ -24,7 +24,7 @@ http://localhost:5601/app/dev_tools
 ```http
 GET /tags_test/_search
 {
-  "from": 10,
+  "from": 0,
   "size": 10
 }
 ```
@@ -37,7 +37,7 @@ GET /tags_test/_search
 python -m src.parse.main
 ```
 
-Не забудьте указать свой диапазон парсинга (строка 68 в файле `src/parse/main.py`).
+Не забудьте указать свой диапазон парсинга (строка 68 в файле `src/parse/main.py`), а также включенный Elastic и База данных для сохранения изображений.
 
 ## 3. Обучение моделей
 
