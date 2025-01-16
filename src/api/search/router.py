@@ -21,7 +21,7 @@ async def start_search(
 
     try:
         result_ids = None
-        if search_string:
+        if search_string and search_string.strip():
             search_string = " ".join(search_string.split())
             result_ids = await ElasticService.search(
                 search_string=search_string, limit=page_size,

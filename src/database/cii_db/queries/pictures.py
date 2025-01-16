@@ -1,7 +1,7 @@
 from typing import Dict, List
 
 from pydantic import BaseModel
-from sqlalchemy import select, func
+from sqlalchemy import select, func, case
 from sqlalchemy.exc import SQLAlchemyError
 
 from src.database.base_DAO import BaseDAO
@@ -128,9 +128,16 @@ class PicturesQuery(
                     .limit(limit)
                 )
                 if image_ids:
-                    query.filter(PicturesModel.id.in_(image_ids))
+                    order_case = case(
+                        {image_id: index for index, image_id in enumerate(image_ids)},
+                        value=PicturesModel.id
+                    )
+                    query = (
+                        query.filter(PicturesModel.id.in_(image_ids))
+                        .order_by(order_case)
+                    )
                 else:
-                    query.order_by(PicturesModel.updated_at.desc())
+                    query = query.order_by(PicturesModel.updated_at.desc())
 
                 result_orm = await session.execute(query)
                 result = result_orm.mappings().all()
