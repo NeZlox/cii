@@ -10,7 +10,7 @@ from src.config import settings
 router = APIRouter(tags=["Search images"], prefix="/search")
 
 
-@router.get("/", response_model=ResponsePictures)
+@router.get("", response_model=ResponsePictures)
 @version(1)
 async def start_search(
         search_string: str = None,
