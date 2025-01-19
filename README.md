@@ -1,3 +1,23 @@
+## Настройка окружения
+
+Создайте файл `.env` в корне проекта с следующим содержимым:
+
+```sh
+MODE=DEV
+LOG_LEVEL=INFO
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASS=0000
+DB_NAME=cii
+
+ELASTIC_HOST=localhost
+ELASTIC_PORT=9200
+ELASTIC_INDEX=tags_test
+```
+
+
 
 # Инструкция по запуску проекта
 
